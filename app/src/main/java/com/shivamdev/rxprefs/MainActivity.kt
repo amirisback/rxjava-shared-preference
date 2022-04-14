@@ -6,13 +6,14 @@ import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.activity_main.bClear
-import kotlinx.android.synthetic.main.activity_main.bSubmit
-import kotlinx.android.synthetic.main.activity_main.etName
-import kotlinx.android.synthetic.main.activity_main.tvName
+import com.shivamdev.rxprefs.databinding.ActivityMainBinding
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class MainActivity : AppCompatActivity() {
+
+    private val binding: ActivityMainBinding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
 
     private lateinit var repository: NameRepository
     private val disposables = CompositeDisposable()
@@ -25,19 +26,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleData() {
-        bSubmit.setOnClickListener {
-            val name = etName.toText()
-            disposables.add(repository.saveName(name).subscribe())
-        }
+        binding.apply {
+            bSubmit.setOnClickListener {
+                val name = etName.toText()
+                disposables.add(repository.saveName(name).subscribe())
+            }
 
-        disposables.add(repository.name().subscribe({
-            tvName.text = it
-        }, {
-            Log.e("Error : ", "", it)
-        }))
+            disposables.add(repository.name().subscribe({
+                tvName.text = it
+            }, {
+                Log.e("Error : ", "", it)
+            }))
 
-        bClear.setOnClickListener {
-            disposables.add(repository.clear().subscribe())
+            bClear.setOnClickListener {
+                disposables.add(repository.clear().subscribe())
+            }
         }
     }
 
